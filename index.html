@@ -9,7 +9,7 @@
 <style>
     body { margin:0; padding:0; font-family:"Bitter",serif; }
 
-    /* HEADER FIJO sin reducción */
+    /* HEADER FIJO */
     .sticky-header {
         position: sticky;
         top: 0;
@@ -35,177 +35,157 @@
     .weather-box {
         font-family:"Montserrat",sans-serif;
         font-size:16px;
-        color:#444;
         display:flex;
         align-items:center;
         gap:6px;
     }
 
-    /* BARRA AMARILLA */
     .top-bar {
         background:#EACB26;
         padding:10px 20px;
         display:flex;
-        align-items:center;
         justify-content:space-between;
         font-family:"Montserrat",sans-serif;
         font-size:15px;
     }
 
-    .top-left { display:flex; gap:25px; align-items:center; }
-    .top-right { display:flex; gap:20px; font-size:20px; }
-
-    .social-icon { opacity:0.9; cursor:pointer; }
-    .social-icon:hover { opacity:1; }
-
-    /* GRID DESKTOP: noticia principal + columna lateral con 4 noticias */
-    .layout {
+    /* DESKTOP MAIN */
+    .desktop-main {
         max-width: 1200px;
-        margin: 20px auto;
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 30px;
-        padding: 0 20px;
+        margin:20px auto;
+        padding:0 20px;
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:30px;
     }
 
-    .main-news img { width:100%; height:380px; object-fit:cover; border-radius:4px; }
-    .main-news h1 { font-size:44px; font-weight:800; margin:20px 0 10px; }
+    .primary img { width:100%; height:380px; object-fit:cover; border-radius:4px; }
+    .primary h1 { font-size:40px; font-weight:800; margin:15px 0 5px; }
+    .primary h2 { font-size:20px; color:#555; margin-top:0; }
 
-    .side-news { display:flex; flex-direction:column; gap:20px; }
-    .side-item img { width:100%; height:180px; object-fit:cover; border-radius:4px; }
-    .side-item h2 { font-size:26px; font-weight:800; }
+    /* GRID 2×2 NOTICIAS 2–5 */
+    .grid-2x2 {
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:20px;
+    }
+    .grid-2x2-item img { width:100%; height:160px; object-fit:cover; border-radius:4px; }
+    .grid-2x2-item h3 { font-size:22px; margin:10px 0 0; font-weight:800; }
 
-    /* FEED INFERIOR */
+    /* FEED 6+ */
     .feed {
         max-width:1200px;
         margin:40px auto;
         padding:0 20px;
         display:grid;
-        grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+        grid-template-columns: repeat(3, 1fr);
         gap:25px;
     }
+    .feed-item img { width:100%; height:200px; object-fit:cover; border-radius:4px; }
+    .feed-item h4 { font-size:20px; margin-top:8px; font-weight:800; }
 
-    .feed-item img { width:100%; height:200px; object-fit:cover; }
-    .feed-item h3 { font-size:22px; font-weight:800; }
-
-    /* HOVER estilo clickeable */
-    .news-item:hover h1,
-    .news-item:hover h2,
-    .news-item:hover h3 { text-decoration:underline; cursor:pointer; }
-
-    /* TABLET */
-    @media (max-width: 900px){
-        .layout{ grid-template-columns:1fr; }
-        .main-news h1{ font-size:38px; }
-    }
-
-    /* MOBILE – SIEMPRE UNA NOTICIA POR FILA */
-    @media (max-width: 750px){
-        .layout{
-            grid-template-columns: 1fr !important;
-        }
-        .side-news{
-            width: 100%;
-        }
-        .feed{
-            grid-template-columns: 1fr !important;
-        }
-        .main-news img{
-            height: 250px;
-        }
-        .main-news h1{
-            font-size: 30px;
-        }
-        .side-item h2{
-            font-size: 22px;
-        }
+    /* MOBILE: 1 noticia por fila */
+    @media(max-width:800px){
+        .desktop-main { grid-template-columns:1fr; }
+        .grid-2x2 { grid-template-columns:1fr; }
+        .feed { grid-template-columns:1fr; }
+        .primary img { height:260px; }
     }
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="sticky-header">
     <div class="header-top">
         <div style="font-size:28px;cursor:pointer;">☰</div>
         <div class="header-logo">elCanicilier</div>
-        <div class="weather-box" id="weather-box">⛅ <span id="temp"></span>°C Buenos Aires</div>
+        <div class="weather-box">⛅ <span id="temp"></span>°C Buenos Aires</div>
     </div>
 </div>
 
+<!-- BARRA AMARILLA -->
 <div class="top-bar">
-    <div class="top-left">
-        <div id="fecha-hoy"></div>
-        <div id="dolar-info">Cargando dólar...</div>
-    </div>
-
-    <div class="top-right">
-        <div class="social-icon">📘</div>
-        <div class="social-icon">✖</div>
-        <div class="social-icon">📸</div>
-        <div class="social-icon">🎵</div>
-    </div>
+    <div id="fecha-hoy"></div>
+    <div id="dolar-info">Cargando dólar...</div>
 </div>
 
-<div class="layout" id="main-layout"></div>
-<div class="feed" id="feed-container"></div>
+<!-- DESKTOP MAIN -->
+<div class="desktop-main">
+    <div class="primary" id="primary"></div>
+    <div class="grid-2x2" id="grid-2x2"></div>
+</div>
+
+<!-- FEED -->
+<div class="feed" id="feed"></div>
 
 <script>
-// Fecha
-const fechaSpan = document.getElementById("fecha-hoy");
-fechaSpan.textContent = new Date().toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+// Fecha dinámica
+document.getElementById("fecha-hoy").textContent = new Date().toLocaleDateString("es-ES", {
+    weekday:"long", year:"numeric", month:"long", day:"numeric"
+});
 
 // Clima
 fetch("https://api.open-meteo.com/v1/forecast?latitude=-34.60&longitude=-58.38&current_weather=true")
-  .then(r=>r.json()).then(d=>{
-      document.getElementById("temp").textContent = Math.round(d.current_weather.temperature);
-  });
+.then(r=>r.json())
+.then(d=>{ document.getElementById("temp").textContent = Math.round(d.current_weather.temperature); });
 
 // Dólar
 fetch("https://api.bluelytics.com.ar/v2/latest")
-  .then(r=>r.json()).then(d=>{
-      document.getElementById("dolar-info").innerHTML =
-        `Dólar: BNA $${d.oficial.value_buy} / $${d.oficial.value_sell} · Blue $${d.blue.value_buy} / $${d.blue.value_sell}`;
-  });
+.then(r=>r.json())
+.then(d=>{
+    document.getElementById("dolar-info").innerHTML =
+      `Dólar: BNA $${d.oficial.value_buy} / $${d.oficial.value_sell} · Blue $${d.blue.value_buy} / $${d.blue.value_sell}`;
+});
 
-// Noticias: principal + 4 laterales + feed
-const sheetId="1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
-const sheetUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+// Google Sheet
+const sheetId = "1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
+const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
-fetch(sheetUrl).then(r=>r.text()).then(t=>{
-    const json=JSON.parse(t.substring(47,t.length-2));
-    const rows=json.table.rows;
+fetch(url)
+  .then(r => r.text())
+  .then(t => {
 
-    const main=document.getElementById("main-layout");
-    const feed=document.getElementById("feed-container");
+    // Corrección definitiva → Detecta inicio real del JSON
+    let jsonText = t.substring(t.indexOf("{"), t.lastIndexOf("}") + 1);
+    const json = JSON.parse(jsonText);
+    const rows = json.table.rows;
 
-    // Principal
-    main.innerHTML = `
-        <div class="main-news news-item">
-            <img src="${rows[0].c[1].v}">
-            <h1>${rows[0].c[0].v}</h1>
-        </div>
-    `;
-
-    // 4 laterales
-    let sideHTML="";
-    for(let i=1;i<=4 && i<rows.length;i++){
-        sideHTML+=`
-            <div class="side-item news-item">
-                <img src="${rows[i].c[1].v}">
-                <h2>${rows[i].c[0].v}</h2>
-            </div>`;
+    /* ---------- PRIMARY NEWS ---------- */
+    if (rows[0] && rows[0].c) {
+        const c = rows[0].c;
+        document.getElementById("primary").innerHTML = `
+            <img src="${c[1]?.v || ""}">
+            <h1>${c[0]?.v || ""}</h1>
+            <h2>${c[2]?.v || ""}</h2>
+        `;
     }
 
-    main.innerHTML+=`<div class="side-news">${sideHTML}</div>`;
-
-    // Feed
-    for(let i=5;i<rows.length;i++){
-        feed.innerHTML+=`
-            <div class="feed-item news-item">
-                <img src="${rows[i].c[1].v}">
-                <h3>${rows[i].c[0].v}</h3>
+    /* ---------- 2–5 GRID ---------- */
+    let g = "";
+    for (let i = 1; i <= 4 && i < rows.length; i++) {
+        const c = rows[i].c;
+        if (!c) continue;
+        g += `
+            <div class="grid-2x2-item">
+                <img src="${c[1]?.v || ""}">
+                <h3>${c[0]?.v || ""}</h3>
             </div>`;
     }
+    document.getElementById("grid-2x2").innerHTML = g;
+
+    /* ---------- FEED 6+ ---------- */
+    let f = "";
+    for (let i = 5; i < rows.length; i++) {
+        if (!rows[i] || !rows[i].c) continue;
+        const c = rows[i].c;
+        f += `
+            <div class="feed-item">
+                <img src="${c[1]?.v || ""}">
+                <h4>${c[0]?.v || ""}</h4>
+            </div>`;
+    }
+    document.getElementById("feed").innerHTML = f;
 });
 </script>
 
