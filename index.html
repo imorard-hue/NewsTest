@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>El Canicilier</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Bitter:wght@400;700;800;900&display=swap" rel="stylesheet">
 
@@ -84,8 +85,8 @@
     .feed-item img { width:100%; height:200px; object-fit:cover; border-radius:4px; }
     .feed-item h4 { font-size:20px; margin-top:8px; font-weight:800; }
 
-    /* MOBILE FIX: UNA NOTICIA POR FILA, SUBTITULO SOLO EN LA PRIMERA */
-    @media(max-width:850px){
+    /* MOBILE: UNA NOTICIA POR FILA, SUBTÍTULO SOLO EN LA PRIMERA */
+    @media(max-width: 900px){
         .desktop-main {
             grid-template-columns:1fr !important;
         }
@@ -99,12 +100,6 @@
         .primary img { height:260px; }
         .grid-2x2-item img,
         .feed-item img { height:220px; }
-
-        /* Ocultar subtítulo en mobile para noticias 2..n */
-        .grid-2x2-item h2,
-        .feed-item h2 {
-            display:none !important;
-        }
     }
 </style>
 </head>
@@ -158,17 +153,20 @@ const sheetId = "1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
 const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
 fetch(url).then(r=>r.text()).then(t=>{
+    // Parseo robusto del JSON de Google
     let jsonText = t.substring(t.indexOf("{"), t.lastIndexOf("}") + 1);
     const json = JSON.parse(jsonText);
     const rows = json.table.rows;
 
     /* ---------- PRIMARY NEWS ---------- */
-    const p = rows[0].c;
-    document.getElementById("primary").innerHTML = `
-        <img src="${p[1]?.v || ""}">
-        <h1>${p[0]?.v || ""}</h1>
-        <h2>${p[2]?.v || ""}</h2>
-    `;
+    if (rows[0] && rows[0].c) {
+        const p = rows[0].c;
+        document.getElementById("primary").innerHTML = `
+            <img src="${p[1]?.v || ""}">
+            <h1>${p[0]?.v || ""}</h1>
+            <h2>${p[2]?.v || ""}</h2>
+        `;
+    }
 
     /* ---------- 2–5 GRID ---------- */
     let g = "";
@@ -186,8 +184,8 @@ fetch(url).then(r=>r.text()).then(t=>{
     /* ---------- FEED 6+ ---------- */
     let f = "";
     for (let i = 5; i < rows.length; i++) {
+        if (!rows[i] || !rows[i].c) continue;
         const c = rows[i].c;
-        if (!c) continue;
         f += `
             <div class="feed-item">
                 <img src="${c[1]?.v || ""}">
