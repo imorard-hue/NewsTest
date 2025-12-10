@@ -4,31 +4,32 @@
 <meta charset="UTF-8">
 <title>El Canicilier</title>
 
-<!-- Fuentes -->
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Bitter:wght@400;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-    body { margin:0; padding:0; background:#ffffff; color:#111; font-family:"Bitter",serif; }
+    body { margin:0; padding:0; font-family:"Bitter",serif; }
 
-    /* ------------------- HEADER FIJO ------------------- */
+    /* HEADER FIJO */
     .sticky-header {
         position: sticky;
         top: 0;
         background: #fff;
         z-index: 999;
         border-bottom: 1px solid #eee;
+        transform: scale(0.95);
+        transform-origin: top;
     }
 
     .header-top {
         display:flex;
         justify-content:space-between;
         align-items:center;
-        padding:15px 20px;
+        padding:12px 20px;
     }
 
     .header-logo {
         font-family:"Montserrat",sans-serif;
-        font-size:48px;
+        font-size:46px;
         font-weight:700;
         color:#EACB26;
     }
@@ -42,7 +43,7 @@
         gap:6px;
     }
 
-    /* ------------------- BARRA AMARILLA ------------------- */
+    /* BARRA AMARILLA */
     .top-bar {
         background:#EACB26;
         padding:10px 20px;
@@ -59,8 +60,7 @@
     .social-icon { opacity:0.9; cursor:pointer; }
     .social-icon:hover { opacity:1; }
 
-    /* ------------------- GRID DESKTOP ------------------- */
-
+    /* GRID */
     .layout {
         max-width: 1200px;
         margin: 20px auto;
@@ -70,31 +70,12 @@
         padding: 0 20px;
     }
 
-    .main-news img {
-        width: 100%;
-        height: 380px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-
-    .main-news h1 {
-        font-family: "Bitter", serif;
-        font-size: 44px;
-        font-weight: 800;
-        line-height: 1.1;
-        margin-block: 20px 10px;
-        letter-spacing: -0.5px;
-    }
+    .main-news img { width:100%; height:380px; object-fit:cover; border-radius:4px; }
+    .main-news h1 { font-size:44px; font-weight:800; margin:20px 0 10px; }
 
     .side-news { display:flex; flex-direction:column; gap:20px; }
     .side-item img { width:100%; height:180px; object-fit:cover; border-radius:4px; }
-
-    .side-item h2 {
-        font-family:"Bitter",serif;
-        font-size:26px;
-        font-weight:800;
-        line-height:1.15;
-    }
+    .side-item h2 { font-size:26px; font-weight:800; }
 
     /* FEED */
     .feed {
@@ -107,142 +88,125 @@
     }
 
     .feed-item img { width:100%; height:200px; object-fit:cover; }
-    .feed-item h3 {
-        font-family:"Bitter",serif;
-        font-size:22px;
-        font-weight:800;
-    }
+    .feed-item h3 { font-size:22px; font-weight:800; }
 
-    /* Hover */
+    /* HOVER */
     .news-item:hover h1,
     .news-item:hover h2,
-    .news-item:hover h3 {
-        text-decoration: underline;
-        cursor: pointer;
-    }
+    .news-item:hover h3 { text-decoration:underline; cursor:pointer; }
 
-    @media (max-width:900px){
-        .layout{ grid-template-columns:1fr 1fr; }
-        .main-news h1{ font-size:36px; }
-    }
-
-    @media (max-width:600px){
+    /* TABLET */
+    @media (max-width: 900px){
         .layout{ grid-template-columns:1fr; }
-        .feed{ grid-template-columns:1fr; }
-        .main-news img{ height:260px; }
-        .main-news h1{ font-size:32px; }
-        .side-item h2{ font-size:22px; }
+        .main-news h1{ font-size:38px; }
+    }
+
+    /* MOBILE – SIEMPRE UNA NOTICIA POR FILA */
+    @media (max-width: 750px){
+        .layout{
+            grid-template-columns: 1fr !important;
+        }
+        .side-news{
+            flex-direction: column;
+            width: 100%;
+        }
+        .feed{
+            grid-template-columns: 1fr !important;
+        }
+        .main-news img{
+            height: 250px;
+        }
+        .main-news h1{
+            font-size: 30px;
+        }
+        .side-item h2{
+            font-size: 22px;
+        }
     }
 </style>
 </head>
 <body>
 
-<!-- HEADER FIJO -->
 <div class="sticky-header">
-
     <div class="header-top">
         <div style="font-size:28px;cursor:pointer;">☰</div>
-
         <div class="header-logo">elCanicilier</div>
-
-        <div class="weather-box" id="weather-box">
-            ⛅ <span id="temp"></span>°C Buenos Aires
-        </div>
+        <div class="weather-box" id="weather-box">⛅ <span id="temp"></span>°C Buenos Aires</div>
     </div>
-
-    <!-- BARRA AMARILLA -->
-    <div class="top-bar">
-        <div class="top-left">
-            <div id="fecha-hoy"></div>
-            <div id="dolar-info">Cargando dólar...</div>
-        </div>
-
-        <div class="top-right">
-            <!-- Íconos sociales decorativos -->
-            <div class="social-icon">📘</div>
-            <div class="social-icon">✖</div>
-            <div class="social-icon">📸</div>
-            <div class="social-icon">🎵</div>
-        </div>
-    </div>
-
 </div>
 
-<!-- CONTENIDO -->
+<div class="top-bar">
+    <div class="top-left">
+        <div id="fecha-hoy"></div>
+        <div id="dolar-info">Cargando dólar...</div>
+    </div>
+
+    <div class="top-right">
+        <div class="social-icon">📘</div>
+        <div class="social-icon">✖</div>
+        <div class="social-icon">📸</div>
+        <div class="social-icon">🎵</div>
+    </div>
+</div>
+
 <div class="layout" id="main-layout"></div>
 <div class="feed" id="feed-container"></div>
 
 <script>
-// Fecha dinámica
+// Fecha
 const fechaSpan = document.getElementById("fecha-hoy");
-const hoy = new Date();
-const opciones = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-fechaSpan.textContent = hoy.toLocaleDateString('es-ES', opciones);
+fechaSpan.textContent = new Date().toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-// Clima usando API pública Open-Meteo
+// Clima
 fetch("https://api.open-meteo.com/v1/forecast?latitude=-34.60&longitude=-58.38&current_weather=true")
-  .then(r=>r.json())
-  .then(d=>{
+  .then(r=>r.json()).then(d=>{
       document.getElementById("temp").textContent = Math.round(d.current_weather.temperature);
   });
 
-// Dólar Blue y Oficial con API bluelytics
+// Dólar
 fetch("https://api.bluelytics.com.ar/v2/latest")
-  .then(r=>r.json())
-  .then(d=>{
-      const oficial = d.oficial;
-      const blue = d.blue;
+  .then(r=>r.json()).then(d=>{
       document.getElementById("dolar-info").innerHTML =
-        `Dólar: BNA $${oficial.value_buy} / $${oficial.value_sell} · Blue $${blue.value_buy} / $${blue.value_sell}`;
+        `Dólar: BNA $${d.oficial.value_buy} / $${d.oficial.value_sell} · Blue $${d.blue.value_buy} / $${d.blue.value_sell}`;
   });
 
-// Noticias desde Google Sheets
-const sheetId = "1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
-const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+// Noticias
+const sheetId="1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
+const sheetUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
-fetch(sheetUrl)
-  .then(res => res.text())
-  .then(text => {
-      const json = JSON.parse(text.substring(47, text.length - 2));
-      const rows = json.table.rows;
+fetch(sheetUrl).then(r=>r.text()).then(t=>{
+    const json=JSON.parse(t.substring(47,t.length-2));
+    const rows=json.table.rows;
 
-      const mainLayout = document.getElementById("main-layout");
-      const feed = document.getElementById("feed-container");
+    const main=document.getElementById("main-layout");
+    const feed=document.getElementById("feed-container");
 
-      // Noticia principal
-      mainLayout.innerHTML = `
-          <div class="main-news news-item">
-              <img src="${rows[0].c[1].v}">
-              <h1>${rows[0].c[0].v}</h1>
-          </div>
-      `;
+    main.innerHTML = `
+        <div class="main-news news-item">
+            <img src="${rows[0].c[1].v}">
+            <h1>${rows[0].c[0].v}</h1>
+        </div>
+    `;
 
-      // Noticias laterales
-      let sideHTML = "";
-      for (let i = 1; i <= 2 && i < rows.length; i++) {
-          sideHTML += `
-             <div class="side-item news-item">
+    let sideHTML="";
+    for(let i=1;i<=2&&i<rows.length;i++){
+        sideHTML+=`
+            <div class="side-item news-item">
                 <img src="${rows[i].c[1].v}">
                 <h2>${rows[i].c[0].v}</h2>
-             </div>
-          `;
-      }
+            </div>`;
+    }
 
-      mainLayout.innerHTML += `
-          <div class="side-news">${sideHTML}</div>
-          <div class="side-news"></div>
-      `;
+    main.innerHTML+=`<div class="side-news">${sideHTML}</div><div class="side-news"></div>`;
 
-      // Feed
-      for (let i = 3; i < rows.length; i++) {
-          feed.innerHTML += `
-              <div class="feed-item news-item">
-                  <img src="${rows[i].c[1].v}">
-                  <h3>${rows[i].c[0].v}</h3>
-              </div>
-          `;
-      }
-  });
+    for(let i=3;i<rows.length;i++){
+        feed.innerHTML+=`
+            <div class="feed-item news-item">
+                <img src="${rows[i].c[1].v}">
+                <h3>${rows[i].c[0].v}</h3>
+            </div>`;
+    }
+});
 </script>
 
 </body>
