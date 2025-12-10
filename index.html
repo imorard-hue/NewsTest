@@ -9,14 +9,13 @@
 <style>
     body { margin:0; padding:0; font-family:"Bitter",serif; }
 
-    /* HEADER FIJO */
+    /* HEADER FIJO sin reducción */
     .sticky-header {
         position: sticky;
         top: 0;
         background: #fff;
         z-index: 999;
         border-bottom: 1px solid #eee;
-        transform-origin: top;
     }
 
     .header-top {
@@ -59,12 +58,12 @@
     .social-icon { opacity:0.9; cursor:pointer; }
     .social-icon:hover { opacity:1; }
 
-    /* GRID */
+    /* GRID DESKTOP: noticia principal + columna lateral con 4 noticias */
     .layout {
         max-width: 1200px;
         margin: 20px auto;
         display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
+        grid-template-columns: 2fr 1fr;
         gap: 30px;
         padding: 0 20px;
     }
@@ -76,7 +75,7 @@
     .side-item img { width:100%; height:180px; object-fit:cover; border-radius:4px; }
     .side-item h2 { font-size:26px; font-weight:800; }
 
-    /* FEED */
+    /* FEED INFERIOR */
     .feed {
         max-width:1200px;
         margin:40px auto;
@@ -89,7 +88,7 @@
     .feed-item img { width:100%; height:200px; object-fit:cover; }
     .feed-item h3 { font-size:22px; font-weight:800; }
 
-    /* HOVER */
+    /* HOVER estilo clickeable */
     .news-item:hover h1,
     .news-item:hover h2,
     .news-item:hover h3 { text-decoration:underline; cursor:pointer; }
@@ -106,7 +105,6 @@
             grid-template-columns: 1fr !important;
         }
         .side-news{
-            flex-direction: column;
             width: 100%;
         }
         .feed{
@@ -169,7 +167,7 @@ fetch("https://api.bluelytics.com.ar/v2/latest")
         `Dólar: BNA $${d.oficial.value_buy} / $${d.oficial.value_sell} · Blue $${d.blue.value_buy} / $${d.blue.value_sell}`;
   });
 
-// Noticias
+// Noticias: principal + 4 laterales + feed
 const sheetId="1ocZG8kFq8j2sZtg_5k3ZCr8zy0TnkfkXCFOiFV1qLL4";
 const sheetUrl=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 
@@ -180,6 +178,7 @@ fetch(sheetUrl).then(r=>r.text()).then(t=>{
     const main=document.getElementById("main-layout");
     const feed=document.getElementById("feed-container");
 
+    // Principal
     main.innerHTML = `
         <div class="main-news news-item">
             <img src="${rows[0].c[1].v}">
@@ -187,8 +186,9 @@ fetch(sheetUrl).then(r=>r.text()).then(t=>{
         </div>
     `;
 
+    // 4 laterales
     let sideHTML="";
-    for(let i=1;i<=2&&i<rows.length;i++){
+    for(let i=1;i<=4 && i<rows.length;i++){
         sideHTML+=`
             <div class="side-item news-item">
                 <img src="${rows[i].c[1].v}">
@@ -196,9 +196,10 @@ fetch(sheetUrl).then(r=>r.text()).then(t=>{
             </div>`;
     }
 
-    main.innerHTML+=`<div class="side-news">${sideHTML}</div><div class="side-news"></div>`;
+    main.innerHTML+=`<div class="side-news">${sideHTML}</div>`;
 
-    for(let i=3;i<rows.length;i++){
+    // Feed
+    for(let i=5;i<rows.length;i++){
         feed.innerHTML+=`
             <div class="feed-item news-item">
                 <img src="${rows[i].c[1].v}">
@@ -210,4 +211,3 @@ fetch(sheetUrl).then(r=>r.text()).then(t=>{
 
 </body>
 </html>
-
